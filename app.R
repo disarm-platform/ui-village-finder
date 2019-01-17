@@ -90,13 +90,13 @@ server <- function(input, output){
     load(filename_raster_pop())
     Initial_Maximum_Population_Raster <- maxValue(Population_Raster_Vx_Original$as.RasterLayer())
     
-    # load("Data/Eswatini/Population_Raster_Vx_Original.RData")
-    # Population_Raster_Vx_Original
-    # Initial_Maximum_Population_Raster <- maxValue(Population_Raster_Vx_Original$as.RasterLayer())
+    load("Data/Eswatini/Population_Raster_Vx_Original.RData")
+    Population_Raster_Vx_Original
+    Initial_Maximum_Population_Raster <- maxValue(Population_Raster_Vx_Original$as.RasterLayer())
     
     
     # List of existing villages
-    # User_Input_Villages_DF <- Champasak_Villages <- read_csv("Data/Champasak_Villages_Coordinates_Shinny.csv", col_types = "cdd")
+    User_Input_Villages_DF <- Champasak_Villages <- read_csv("Data/Champasak_Villages_Coordinates_Shinny.csv", col_types = "cdd")
     User_Input_Village_Table <- input$User_Input_Village
     
     User_Input_Villages_DF <- Champasak_Villages <- NULL
@@ -109,9 +109,9 @@ server <- function(input, output){
     Max_Number_Of_People_In_Cluster <- Max_Number_Of_People_In_Cluster() # Max number of people defining a populated cluster
     Min_Number_Of_People_In_Cluster <- Min_Number_Of_People_In_Cluster() # Minimun number of people defining a populated cluster
     Maximum_Area_Size_Of_Cluster_Km2 <- Maximum_Area_Size_Of_Cluster_Km2() # Maximum area size defining a populated cluster
-    # Max_Number_Of_People_In_Cluster <- 5000 # Max number of people defining a populated cluster
-    # Min_Number_Of_People_In_Cluster <- 5000 # Minimun number of people defining a populated cluster
-    # Maximum_Area_Size_Of_Cluster_Km2 <- 100 # Maximum area size defining a populated cluster
+    Max_Number_Of_People_In_Cluster <- 5000 # Max number of people defining a populated cluster
+    Min_Number_Of_People_In_Cluster <- 5000 # Minimun number of people defining a populated cluster
+    Maximum_Area_Size_Of_Cluster_Km2 <- 100 # Maximum area size defining a populated cluster
     
     # This code creates a function to propose a list of village coordinates based on a population density raster
     
@@ -156,7 +156,8 @@ server <- function(input, output){
         Populated_Cluster_DF <- rbind(Populated_Cluster_DF,
                                       cbind(Coordinates_Of_Populated_Cluster_DF,
                                             Resolution_Of_Populated_Cluster_DF,
-                                            Population_Of_Populated_Cluster_DF))
+                                            Population_Of_Populated_Cluster_DF,
+                                            Area = rep(Area_Size_Population_Raster_Cell, length(Cells_Of_Populated_Cluster))))
         
         # Remove people from identified populated cluster in order to look for other, more aggregated ones
         Population_Raster_Vx <- velox(raster::subs(x = Population_Raster_Vx$as.RasterLayer(),
@@ -188,7 +189,8 @@ server <- function(input, output){
       Populated_Cluster_DF <- rbind(Populated_Cluster_DF,
                                     cbind(Coordinates_Of_Populated_Cluster_DF,
                                           Resolution_Of_Populated_Cluster_DF,
-                                          Population_Of_Populated_Cluster_DF))
+                                          Population_Of_Populated_Cluster_DF,
+                                          Area = rep(Area_Size_Population_Raster_Cell, length(Cells_Of_Populated_Cluster))))
     }
     
     
@@ -213,6 +215,7 @@ server <- function(input, output){
     }
     
     Populated_Cluster_PP$Population_Of_Populated_Cluster <- Populated_Cluster_DF$Population_Of_Populated_Cluster_DF  ## Population of populated clusters
+    Populated_Cluster_PP$Area_Of_Populated_Cluster_km2 <- round(Populated_Cluster_DF$Area, digits = 0)
     
     ### For each populated cluster, suggest one GPS coordinates of 1 village
     User_Input_Villages_Max_Population_In_Populated_Cluster_DF <- as.tibble(NULL)
@@ -260,15 +263,19 @@ server <- function(input, output){
     ############################
     ### Output visualization ###
     ############################
-    factpal <- colorFactor(topo.colors(length(unique(Populated_Cluster_PP$Width_Of_Populated_Cluster))), Populated_Cluster_PP$Width_Of_Populated_Cluster)
+    factpal <- colorFactor(topo.colors(length(unique(Populated_Cluster_PP$Area_Of_Populated_Cluster_km2))), Populated_Cluster_PP$Area_Of_Populated_Cluster_km2)
     
     Populated_Cluster_PP$Population_Of_Populated_Cluster_Label <- paste0(as.character(round(Populated_Cluster_PP$Population_Of_Populated_Cluster, digits = 0)), " habitants")
     
     map <- leaflet() %>%
       addProviderTiles(providers$Esri.WorldImagery) %>%
       addPolygons(data = Populated_Cluster_PP,
-                  color = ~ factpal(Width_Of_Populated_Cluster),
+                  color = ~ factpal(Area_Of_Populated_Cluster_km2),
                   label = ~ Population_Of_Populated_Cluster_Label) %>%
+      addLegend(pal = factpal,
+                values = Populated_Cluster_PP$Area_Of_Populated_Cluster_km2,
+                title = "Area",
+                labFormat = labelFormat(suffix = " km2")) %>%
       fitBounds(lng1 = min(coordinates(Populated_Cluster_PP)[,1]),
                 lat1 = min(coordinates(Populated_Cluster_PP)[,2]),
                 lng2 = max(coordinates(Populated_Cluster_PP)[,1]),
