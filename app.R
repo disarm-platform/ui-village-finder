@@ -14,7 +14,7 @@ ui <- bootstrapPage(
                   hr(),
                   p("The user needs to specify characteristics of the type of populated locations looked for:"),
                   tags$ul(
-                    tags$li("a maximum area size (km2),", tags$strong("Area_Max"), "above which a region cannot be considered as a unique location"),
+                    tags$li("a maximum area size (km",tags$sup("2"),"),", tags$strong("Area_Max"), "above which a region cannot be considered as a unique location"),
                     tags$li("a population threshold", tags$strong("Population_Max"), "above which a location should be counted as a unique location"),
                     tags$li("a population threshold", tags$strong("Population_Min"), "below which a region smaller than Area_Max should not be counted as a populated location.")),
                   hr(),
@@ -49,12 +49,10 @@ ui <- bootstrapPage(
                 imageOutput("logo", height=2, width=3),
                 top = 370, right = 164,
                 width = 120, height = 40),
-  tags$style(type = "text/css", "html, body {width:100%;height:100%}", 
-             HTML('#time_plot {background-color: rgba(0,0,255,0);;}
-                  #sel_date {background-color: rgba(0,0,255,1);}')),
+  tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
   fluidRow(column(10, offset = 1,
                   leafletOutput("myMap", height = 700)))
-  
+
              )
 
 
@@ -90,13 +88,13 @@ server <- function(input, output){
     load(filename_raster_pop())
     Initial_Maximum_Population_Raster <- maxValue(Population_Raster_Vx_Original$as.RasterLayer())
     
-    load("Data/Eswatini/Population_Raster_Vx_Original.RData")
-    Population_Raster_Vx_Original
-    Initial_Maximum_Population_Raster <- maxValue(Population_Raster_Vx_Original$as.RasterLayer())
+    # load("Data/Eswatini/Population_Raster_Vx_Original.RData")
+    # Population_Raster_Vx_Original
+    # Initial_Maximum_Population_Raster <- maxValue(Population_Raster_Vx_Original$as.RasterLayer())
     
     
     # List of existing villages
-    User_Input_Villages_DF <- Champasak_Villages <- read_csv("Data/Champasak_Villages_Coordinates_Shinny.csv", col_types = "cdd")
+    # User_Input_Villages_DF <- Champasak_Villages <- read_csv("Data/Champasak_Villages_Coordinates_Shinny.csv", col_types = "cdd")
     User_Input_Village_Table <- input$User_Input_Village
     
     User_Input_Villages_DF <- Champasak_Villages <- NULL
@@ -109,9 +107,9 @@ server <- function(input, output){
     Max_Number_Of_People_In_Cluster <- Max_Number_Of_People_In_Cluster() # Max number of people defining a populated cluster
     Min_Number_Of_People_In_Cluster <- Min_Number_Of_People_In_Cluster() # Minimun number of people defining a populated cluster
     Maximum_Area_Size_Of_Cluster_Km2 <- Maximum_Area_Size_Of_Cluster_Km2() # Maximum area size defining a populated cluster
-    Max_Number_Of_People_In_Cluster <- 5000 # Max number of people defining a populated cluster
-    Min_Number_Of_People_In_Cluster <- 5000 # Minimun number of people defining a populated cluster
-    Maximum_Area_Size_Of_Cluster_Km2 <- 100 # Maximum area size defining a populated cluster
+    # Max_Number_Of_People_In_Cluster <- 5000 # Max number of people defining a populated cluster
+    # Min_Number_Of_People_In_Cluster <- 5000 # Minimun number of people defining a populated cluster
+    # Maximum_Area_Size_Of_Cluster_Km2 <- 100 # Maximum area size defining a populated cluster
     
     # This code creates a function to propose a list of village coordinates based on a population density raster
     
@@ -287,9 +285,10 @@ server <- function(input, output){
                          lng = ~ Longitude, lat = ~ Latitude,
                          stroke = F,
                          radius = 2,
-                         color = "navy",
-                         fillOpacity = 0.5,
-                         label = ~ Village_Name)
+                         color = "orange",
+                         fillOpacity = 1,
+                         label = ~ Village_Name) %>%
+        addLegend(colors = "orange; width:7px; height:7px; border:1px solid orange; border-radius:50%; margin-top: 5px", labels = c("Imported Villages"), opacity = 1)
       }
     
     map <- map %>%
@@ -299,7 +298,8 @@ server <- function(input, output){
                          radius = 3,
                          color = "black",
                          fillOpacity = 1,
-                         label = "Suggested village") 
+                         label = "Suggested village") %>%
+      addLegend(colors = "black; width:7px; height:7px; border:1px solid black; border-radius:50%; margin-top: 5px", labels = c("Suggested Villages"), opacity = 1)
     
     if (nrow(User_Input_Villages_Max_Population_In_Populated_Cluster_DF) > 0){
       map <- map %>%
