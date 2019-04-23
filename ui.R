@@ -30,7 +30,7 @@ ui <- bootstrapPage(
            column(3,
                   inputPanel(selectInput(inputId = "Country_selected",
                                          label = "Country",
-                                         choices = c("Haiti", "Swaziland", "Philippines")),
+                                         choices = c("Côte d'Ivoire", "Liberia", "Haiti", "Philippines", "Swaziland")),
                              numericInput(inputId = "Maximum_Area_Size_Of_Cluster_Km2",
                                           label = "Area_Max",
                                           value = 100),
@@ -41,7 +41,12 @@ ui <- bootstrapPage(
                                           label = "Population_Min",
                                           value = 5000),
                              actionButton(inputId = "go",
-                                          label = "Update")))),
+                                          label = "Update"),
+                             conditionalPanel(condition = "input.go > 0",
+                                              br(h4("Download results")),  
+                                              downloadButton("downloadGeoData", "Download geojson"))))),
+
+  
   absolutePanel(style="opacity: 1; padding: 4px; border-bottom: 1px solid #CCC; background-color: rgba(0,0,0,0.7);",
                 imageOutput("logo", height=2, width=3),
                 top = 370, right = 164,

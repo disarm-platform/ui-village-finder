@@ -44,8 +44,6 @@ server <- function(input, output){
                   filename_raster_pop = filename_raster_pop,
                   User_Input_Villages_DF = User_Input_Villages_DF))
       
-      
-      
   }, ignoreNULL = FALSE)
   
   
@@ -56,6 +54,8 @@ server <- function(input, output){
       return(map %>% setView(0,0,zoom=2))
     }
     
+    withProgress(message = 'Crunching the numbers..', {
+      
     request_data <- gen_request_data()
 
     # Send request data to algo
@@ -66,18 +66,13 @@ server <- function(input, output){
         content_type_json(),
         timeout(90)
       )
-browser()
+
     # Get content
     response_content <- content(response)
     
     # catch output
-    Coordinates_Of_Suggested_Villages <- st_read(as.json(response_content$result$Coordinates_Of_Suggested_Villages))
+    Coordinates_Of_Suggested_Villages <<- st_read(as.json(response_content$result$Coordinates_Of_Suggested_Villages))
     Populated_Cluster_PP <- st_read(as.json(response_content$result$Populated_Cluster_PP))
-    # map
-    
-    
-    
-
     
     ############################
     ### Output visualization ###
@@ -131,11 +126,22 @@ browser()
     
     
     map
+    
+    }) # End of progress bar
       
   })
   
   output$logo <- renderImage({
     list(src = "logo_transparent.png")
   }, deleteFile = FALSE)
+  
+  output$downloadGeoData <- downloadHandler(
+    filename = function() {
+      paste("villages.geojson")
+    },
+    content = function(file) {
+      st_write(Coordinates_Of_Suggested_Villages, file)
+    }
+  )
   
 }

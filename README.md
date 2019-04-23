@@ -1,4 +1,4 @@
-# Village_App
+# ui-village-finder
 
 In this folder, I include everything necessary to run the shiny app I wrote to detect villages locations from populated locations. 
 Only the Data/ folder is missing as it is too heavy and should be downloaded elsewhere.
