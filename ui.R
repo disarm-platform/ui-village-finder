@@ -30,7 +30,7 @@ ui <- bootstrapPage(
            column(3,
                   inputPanel(selectInput(inputId = "Country_selected",
                                          label = "Country",
-                                         choices = c("Côte d'Ivoire", "Liberia", "Haiti", "Philippines", "Swaziland")),
+                                         choices = c("Côte d'Ivoire", "Ghana", "Haiti", "India", "Liberia", "Malawi", "Philippines", "Swaziland")),
                              numericInput(inputId = "Maximum_Area_Size_Of_Cluster_Km2",
                                           label = "Area_Max",
                                           value = 100),

@@ -71,9 +71,9 @@ server <- function(input, output){
     response_content <- content(response)
     
     # catch output
-    Coordinates_Of_Suggested_Villages <<- st_read(as.json(response_content$result$Coordinates_Of_Suggested_Villages))
-    Populated_Cluster_PP <- st_read(as.json(response_content$result$Populated_Cluster_PP))
-    
+    Coordinates_Of_Suggested_Villages <<- st_read(as.json(response_content$result$Coordinates_Of_Suggested_Villages), quiet = TRUE)
+    Populated_Cluster_PP <- st_read(as.json(response_content$result$Populated_Cluster_PP), quiet = TRUE)
+
     ############################
     ### Output visualization ###
     ############################

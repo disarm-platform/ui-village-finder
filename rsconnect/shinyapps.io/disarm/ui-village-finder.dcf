@@ -1,0 +1,13 @@
+name: ui-village-finder
+title: ui-village-finder
+username:
+account: disarm
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 819159
+bundleId: 2049589
+url: https://disarm.shinyapps.io/ui-village-finder/
+when: 1556629335.08319
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: README.md|Code/.DS_Store|Code/create_country_pop_velox_rasters.R|Code/Functions_Code.R|Code/Raster_Conversion_Velox.R
