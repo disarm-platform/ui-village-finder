@@ -64,7 +64,7 @@ server <- function(input, output){
         url = "https://faas.srv.disarm.io/function/fn-village-finder",
         body = as.json(request_data),
         content_type_json(),
-        timeout(90)
+        timeout(550)
       )
 
     # Get content
