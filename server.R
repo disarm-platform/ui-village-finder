@@ -144,4 +144,15 @@ server <- function(input, output){
     }
   )
   
+  output$downloadGeoDataCSV <- downloadHandler(
+    filename = function() {
+      paste("villages.csv")
+    },
+    content = function(file) {
+      coords <- as.data.frame(st_coordinates(Coordinates_Of_Suggested_Villages))
+      names(coords) <- c("lng", "lat")
+      write.csv(coords, file)
+    }
+  )
+  
 }
