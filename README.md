@@ -19,7 +19,7 @@ data_urls <- read.csv("https://www.dropbox.com/s/amp4qeh2z8cs2hs/worldpop_countr
 You will also need to change line 30 to match the filename you give your RData file.
 
 ```
-      filename_raster_pop <- list(filename = paste0(ISO3, "_worldpop_2015_ppp.RData"),
+filename_raster_pop <- list(filename = paste0(ISO3, "_worldpop_2015_ppp.RData"),
                                   url = as.character(data_urls$URL[data_urls$ISO3==ISO3]))
 ```
 
